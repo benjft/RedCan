@@ -2,17 +2,23 @@
 #define WIFI_AP_HPP_
 
 #include <esp_wifi.h>
+#include <memory>
+#include "Errors.hpp"
 
 namespace benjft {
     class WifiAp {
         private:
-        static wifi_init_config_t wifi_config;
-        static bool is_initialized;
+        wifi_init_config_t *wifi_config;
+        bool is_initialized;
         
-        void initializeWifi(void);
+        error_t initializeWifi(void);
+
+
+        WifiAp(void);
 
         public:
-        WifiAp(void);
+        WifiAp(WifiAp const&) = delete;
+        void operator=(WifiAp const&) = delete;
     };
-}
+};
 #endif WIFI_AP_HPP_

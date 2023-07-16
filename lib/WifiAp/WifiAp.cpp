@@ -1,29 +1,25 @@
-#include "WifiAp.hpp"
 #include <esp_wifi.h>
-#include <iostream>
+
+#include "Errors.hpp"
+#include "WifiAp.hpp"
 
 using namespace benjft;
 
-wifi_init_config_t 
-WifiAp::wifi_config = WIFI_INIT_CONFIG_DEFAULT();
-
-bool WifiAp::is_initialized = false;
-
-void benjft::WifiAp::initializeWifi(void) {
-    esp_err_t err = esp_wifi_init(&wifi_config);
+benjft::error_t WifiAp::initializeWifi(void) {
+    esp_err_t err = esp_wifi_init(wifi_config);
     if (err == ESP_OK) {
-        std::cout << "esp_wifi initialized" << std::endl;
         is_initialized = true;
     } else if (err == ESP_ERR_NO_MEM) {
-        std::cerr << "Failed to initialize esp_wifi due to lack of memory" << std::endl;
+        return MAKE_ERROR2("Failed to initialize esp_wifi due to lack of memory", err);
     } else {
-        std::cerr << "Unknown error occurred when initializing eps_wifi : " << err << std::endl; 
+        return MAKE_ERROR2("Unknown error occurred when initializing eps_wifi : " + std::to_string(err), err); 
     }
+    return nullptr;
 };
 
 WifiAp::WifiAp(void)
 {
-    if (!is_initialized) {
-        this->initializeWifi();
-    }
+    is_initialized = false;
+    wifi_init_config_t conf = WIFI_INIT_CONFIG_DEFAULT();
+    wifi_config = new wifi_init_config_t(conf);
 };
